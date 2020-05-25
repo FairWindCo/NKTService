@@ -1,0 +1,111 @@
+{% load static %}
+<!DOCTYPE html>
+{% load i18n %}
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--- BOOTSTRAP CSS --->
+{#{% load bootstrap4 %}       {# import bootstrap4/bootstrap3 #}
+{#{% bootstrap_css %}         {# Embed Bootstrap CSS #}
+{#{% bootstrap_javascript jquery='full' %}  {# Embed Bootstrap JS+jQuery #}
+
+<!--- BOOTSTRAP CSS --->
+    <link rel="shortcut icon" href="{% static '/favicon.ico' %}" type='image/x-icon'>
+    <link rel="stylesheet" href="{% static 'base/css/bootstrap.min.css' %}">
+    <!---<link rel="stylesheet" href="{% static 'base/css/bootstrap-grid.min.css' %}">--->
+    <!---<link rel="stylesheet" href="{% static 'base/css/bootstrap-reboot.min.css' %}">--->
+    <!--- JQUERY UI + THEME CSS --->
+    <link rel="stylesheet" href="{% static 'base/css/jquery-ui.css' %}">
+    <link rel="stylesheet" href="{% static 'base/css/jquery-ui.structure.min.css' %}">
+    <link rel="stylesheet" href="{% static 'base/css/jquery-ui.theme.min.css' %}">
+    <link rel="stylesheet" href="{% static 'base/css/theme.css' %}">
+    <!--- JQUERY JS --->
+    <script src="{% static 'base/js/jquery-3.3.1.min.js' %}"></script>
+    <script src="{% static 'base/js/jquery-ui.min.js' %}"></script>
+    <!--- BOOTSTRAP JS --->
+    <script src="{% static 'base/js/popper.min.js' %}"></script>
+    <script src="{% static 'base/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'base/js/bootstrap.bundle.min.js' %}"></script>
+
+    <style>
+        .navbar .dropdown:hover .dropdown-menu {
+            display: block;
+        }
+        .dropdown-menu {
+            top:30px;
+        }
+    </style>
+
+
+    <link rel="stylesheet" href="{% static 'base/style.css' %}">
+
+    {% block head_block %}
+    {% endblock %}
+
+    <title>{% block title %}Сервисный центр НКТ{% endblock %}</title>
+</head>
+<body>
+    <header class="container">
+        <div class="navbar navbar-expand navbar-dark flex-column flex-md-row bd-navbar">
+            <label for="hider_menu" class="btn btn-dark hidden-element-default">Поиск</label><input type="checkbox" id="hider_menu" class="hidden-element">
+            <div class="navbar-nav-scroll">
+                <ul class="navbar-nav bd-navbar-nav flex-row">
+                  <li class="nav-item">
+                    <a class="nav-link " href="/" title="В начало">В начало</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link " href="{% url 'add' %}" title="Добавить Заказ">Добавить</a>
+                  </li>
+                    <li class="nav-item dropdown">
+                            <a class="nav-link" href="#" id="navbarDropdown">
+                              Заказы
+                            </a>
+                            <div class="dropdown-menu">
+                              <a class="dropdown-item" href="{% url 'list_in_work' %}" title="В работе">В работе</a>
+                              <a class="dropdown-item" href="{% url 'list_in_start' %}" title="Только новые">Новые</a>
+                              <a class="dropdown-item" href="{% url 'list_in_client' %}" title="Требует общения с клиентом или выдача">Ожидает взаимодействие с клиентом</a>
+                              <a class="dropdown-item" href="{% url 'list_in_move' %}" title="Необходимо передать или забрать">Ожидает транспортировку</a>
+                              <div class="dropdown-divider"></div>
+                              <a class="dropdown-item" href="{% url 'list_service' %}" title="Завершенные зказы">Сервисные заказы</a>
+                              <a class="dropdown-item" href="{% url 'list_finish' %}" title="Завершенные зказы">Завершенные</a>
+                              <a class="dropdown-item" href="{% url 'list' %}" title="Заказы на сервис">ВСЕ ЗАКАЗЫ</a>
+                            </div>
+                          </li>
+                    <li class="nav-item dropdown">
+                            <a class="nav-link" href="#" id="navbarDropdown2">
+                              Сопроводительные
+                            </a>
+                            <div class="dropdown-menu">
+                              <a class="dropdown-item" href="{% url 'accompanying_sheet' %}" title="Создать сопроводительный лист">Создать лист</a>
+                              <a class="dropdown-item" href="{% url 'accompanying_sheets' %}" title="Сопроводительные листы">Сопроводительные Листы</a>
+                              <a class="dropdown-item" href="{% url 'warranty_card' %}" title="Создать гарантийный талон/чек">Создать талон/Чек</a>
+                              <a class="dropdown-item" href="{% url 'warranty_cards' %}" title="Грантийки/Чеки">Гарантийные талоны/Чеки</a>
+                            </div>
+                          </li>
+                    <li class="nav-item">
+                            <a class="nav-link" href="{% url 'serial_numbers' %}">База сериных</a>
+                    </li>
+                </ul>
+              </div>
+            <div class="col-2" style="margin-left: auto;">
+                {% if user.is_authenticated %}
+                    <div class="nav-item dropdown" style="padding-bottom: 8px;padding-top: 8px;">
+                    USER: {{ user.username }}
+                    <div class="dropdown-menu">
+                        <p class="dropdown-item">{{ user.first_name }} {{ user.last_name }}</p>
+                        <a class="dropdown-item" href="{% url 'update_profile'%}">Изменить</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="{% url 'logout' %}">Выход</a>
+                    </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+    <div class="container">
+        {% block content%}
+        {% endblock %}
+    </div>
+</body>
+</html>

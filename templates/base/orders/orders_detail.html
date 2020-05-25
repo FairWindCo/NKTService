@@ -1,0 +1,150 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!--- BOOTSTRAP CSS --->
+{#{% load bootstrap4 %}       {# import bootstrap4/bootstrap3 #}
+{#{% bootstrap_css %}         {# Embed Bootstrap CSS #}
+{#{% bootstrap_javascript jquery='full' %}  {# Embed Bootstrap JS+jQuery #}
+
+<!--- BOOTSTRAP CSS --->
+    <link rel="stylesheet" href="{% static 'base/css/bootstrap.min.css' %}">
+    <!---<link rel="stylesheet" href="{% static 'base/css/bootstrap-grid.min.css' %}">--->
+    <!---<link rel="stylesheet" href="{% static 'base/css/bootstrap-reboot.min.css' %}">--->
+    <script src="{% static 'base/js/jquery-3.3.1.min.js' %}"></script>
+    <script src="{% static 'base/js/jquery-ui.min.js' %}"></script>
+    <!--- BOOTSTRAP JS --->
+    <script src="{% static 'base/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'base/js/call_dialer.js' %}"></script>
+    <script src="{% static 'base/js/bootstrap.bundle.min.js' %}"></script>
+    <style>
+        .order-detail .panel-body table{
+            font-size: 0.7em;
+        }
+        .order-detail h3{
+            font-size: 1em;
+        }
+        .order-detail h5{
+            font-size: 0.85em;
+        }
+    </style>
+</head>
+<body>
+<div class="panel panel-primary order-detail">
+  <div class="panel-heading">
+    <h3 class="panel-title">Заказ №{{ order.pk }} {% if  order.adi_code %} / {{ order.adi_code }}{% endif %} от {{ order.date_of_receipt }} принят {{ order.author.first_name }}</h3>
+    {% if  order.close_date %}
+      <h5 class="panel-title">Закрыт:{{ order.close_date }}</h5>
+    {% endif %}
+    {% if  order.parentOrder %}
+      <h5 class="panel-title">
+          <a href="#" onclick="modifydialog('{% url 'detail' order.parentOrder.pk  %}'); return false;"> На основании заказа :{{ order.parentOrder.pk }} {% if  order.parentOrder.adi_code %} / {{ parentOrder.adi_code }}{% endif %}  от {{ order.parentOrder.date_of_receipt }}</a>
+      </h5>
+    {% endif %}
+  </div>
+    <div class="panel-body">
+
+        <table class="table">
+          <tbody class="thead-dark">
+            <tr>
+              <th scope="col">Статус</th>
+              <td>{{ order.status }}</td>
+              <td>{{ order.date_of_modify }}</td>
+              <td>{{ order.modify_by.first_name }}</td>
+            </tr>
+            <tr>
+              <th scope="col">Изделие/Товар</th>
+              <td colspan="4">{{ order.item_name }}</td>
+            </tr>
+            <tr>
+            <tr>
+              <th scope="col">Серийник</th>
+              <td colspan>{{ order.serial_number }}</td>
+              <th scope="col">Производитель</th>
+              <td>{{ order.manufacturer }}</td>
+            <tr>
+            <tr>
+              <th scope="col">Куплен: </th>
+              <td >{{ order.item_purchase_date }}</td>
+              <td >{{ order.purchase_document }}</td>
+              <td >{{ order.price|default_if_none:"--" }} грн</td>
+            </tr>
+            <tr>
+              <th scope="col">Контакт: </th>
+              <td>{{ order.contact_person }} {{ order.contact_phone }}<button onclick="create_call('{{ order.contact_phone }}')">CALL</button></td>
+              <th scope="col">Количество: </th>
+              <td>{{ order.count }}</td>
+            </tr>
+            <tr>
+              <th scope="col">Дефект: </th>
+              <td colspan="3">{{ order.damage }}</td>
+            </tr>
+            <tr>
+              <th scope="col">Комплектация: </th>
+              <td>{{ order.equipment }}</td>
+              <th scope="col">Гарантия: </th>
+              <td>{{ order.warranty|default_if_none:"" }}</td>
+            </tr>
+            {% if  order.comments %}
+            <tr>
+              <th scope="col">Комментарий: </th>
+              <td colspan="3">{{ order.comments }}</td>
+            </tr>
+            {% endif %}
+            <tr>
+              <th scope="col">Поставщик: </th>
+                <td>
+                {% if  order.itemProvider.url %}
+                    <a target="_blank" title="{{ order.itemProvider.comments }}" href="{{ order.itemProvider.url|default_if_none:"#"  }}">{{ order.itemProvider.name|default_if_none:"" }}</a>
+                {% else %}
+                    <b title="{{ order.itemProvider.comments }}">{{ order.itemProvider.name|default_if_none:"" }}</b>
+                {% endif %}
+                </td>
+              <td colspan="2">{{ order.customer|default_if_none:"" }}</td>
+            </tr>
+          </tbody>
+        </table>
+        <table class="table">
+          <tbody>
+          {% for process in processing %}
+            <tr>
+                <td>{{ process.new_status }}</td>
+                <td>{{ process.date_of_change }}</td>
+                <td>{{ process.author.first_name }}</td>
+            </tr>
+              {% if  process.move_to %}
+            <tr>
+                <td>Перемещен:</td>
+                <td colspan="2"> {{ process.move_to.name }}</td>
+            </tr>
+              {% endif %}
+              {% if  process.comments %}
+            <tr>
+                <td colspan="3"> {{ process.comments }}</td>
+            </tr>
+              {% endif %}
+
+          {% endfor %}
+
+          </tbody>
+        </table>
+    </div>
+</div>
+</body>
+
+<script>
+        function modifydialog(url)    {
+            element = $('div.panel.panel-primary.order-detail')
+            if(element  && element.length>0) {
+                $.ajax({
+                    url: url,
+                    context: document.body
+                }).done(function (response) {
+                    //$('#products').remove(); // you can keep this line if you think is necessary
+                    $('div.panel.panel-primary.order-detail').html(response);
+                });
+            }
+        }
+</script>
+</html>

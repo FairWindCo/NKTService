@@ -1,0 +1,38 @@
+{% extends 'base/orders/document_order_base.html' %}
+{% block content1%}
+            <h3 style="text-align:center;">АКТ ОТКАЗА В ОБСЛУЖИВАНИИ №{% if  order.adi_code %}{{ order.adi_code }}{% else %}{{ order.pk|stringformat:'08d' }}{% endif %}  от     {{ order.date_of_receipt|date:"d.m.Y" }}</h3>
+            <p>Получено изделие:</p>
+
+            <table>
+            <tbody>
+                <tr>
+                    <td>Оборудование</td>
+                    <td>{{ order.manufacturer }} {{ order.item_name }}</td>
+
+                </tr>
+                <tr>
+                    <td>Серийный номер</td>
+                    <td>{{ order.serial_number }}</td>
+                </tr>
+                <tr>
+                    <td>Комплект</td>
+                    <td>{{ order.equipment }}</td>
+                </tr>
+                <tr>
+                    <td>Неисправность:</td>
+                    <td>{{ order.damage }}</td>
+                <tr>
+                    <td>Примечание:</td>
+                    <td>{{ order.comments }}</td>
+                </tr>
+            </tbody></table>
+
+{% endblock %}
+{% block contact_info%}<p>Контактная информация: {{ order.contact_phone }} {{ order.contact_person }}</p>{% endblock %}
+{% block text %}
+    <div style="width: 100%;border-bottom: 1px solid black; height: 26px;"></div>
+    <div style="width: 100%;border-bottom: 1px solid black; height: 26px;"></div>
+    <div style="width: 100%;border-bottom: 1px solid black; height: 26px;"></div>
+    <div style="width: 100%;border-bottom: 1px solid black; height: 26px;"></div>
+{% endblock %}
+{% block text2 %}{% endblock %}

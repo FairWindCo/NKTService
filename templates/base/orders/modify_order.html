@@ -1,0 +1,20 @@
+{% load bootstrap4 %}
+{% load crispy_forms_tags %}
+{{ form.media }}
+<div class="panel panel-primary">
+  <div class="panel-heading">
+    <h3 class="panel-title">Новый заказ на сервис</h3>
+  </div>
+    <div class="panel-body">
+        <form method="post" id="theForm" novalidate>
+            {% csrf_token %}
+            {# {{ form.as_p}} {##}
+            {# {% bootstrap_form form   %}{#  #}
+             {% crispy form %} {##}
+        </form>
+    </div>
+    <div class="panel-footer">
+        <button id="printView">КВИТАНЦИЯ</button>
+        <button id="printReturn">ВОЗВРАТ</button>
+    </div>
+</div>

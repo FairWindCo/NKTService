@@ -1,0 +1,173 @@
+.bd-navbar {
+    min-height: 4rem;
+    background-color: #563d7c;
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,.05), inset 0 -1px 0 rgba(0,0,0,.1);
+}
+
+ul.pagination {
+    display: -ms-flexbox;
+    display: flex;
+    padding-left: 0;
+    list-style: none;
+    border-radius: .25rem;
+    justify-content: center;
+}
+
+@media (min-width: 577px){
+	.hidden,
+	.hidden-element,
+	.hidden-element-default{
+		display: none !important;
+	}
+}
+
+@media (max-width: 576px){
+    .header_table h1{
+        font-size: 0.9rem;
+    }
+    .header_table h6{
+        font-size: 0.7rem;
+    }
+
+	/* Force table to not be like tables anymore */
+	table, thead, tbody, th, td, tr {
+		display: block;
+	}
+
+	/* Hide table headers (but not display: none;, for accessibility) */
+	thead tr {
+		position: absolute;
+		top: -9999px;
+		left: -9999px;
+	}
+
+	.table tr { border: 1px solid #ccc; }
+
+    th{
+        padding: .2rem;
+    }
+
+	td {
+		/* Behave  like a "row" */
+		border: none;
+		border-bottom: 1px solid #eee;
+		position: relative;
+		padding-left: 50%;
+	}
+
+	td:before {
+		/* Now like a table header
+		position: absolute;
+		/* Top/left values mimic padding */
+		top: 6px;
+		left: 6px;
+		width: 45%;
+		padding-right: 10px;
+		white-space: nowrap;
+	}
+
+	/*
+	Label the data
+	*/
+    .navbar .hidden-element-default{
+        display: inline-block;
+    }
+    .navbar .navbar-nav-scroll{
+        display: none;
+    }
+
+    input#hider_menu:checked+div.navbar-nav-scroll{
+        top: 55px;
+        display: block;
+        position: absolute;
+        background-color: #563d7c;
+        left: 0;
+        z-index: 100;
+        border: 1px solid white;
+        border-radius: 5px;
+    }
+
+    div.navbar-nav-scroll ul{
+        -ms-flex-direction: column!important;
+        flex-direction: column!important;
+    }
+
+    .container div.flex-column {
+        -ms-flex-direction: row!important;
+        flex-direction: row!important;
+        justify-content: space-between;
+    }
+
+    .navbar div.col-2{
+        display: inline-block;
+        margin-left: 0px !important;
+        max-width: 25%;
+    }
+
+    .navbar input#hider_menu{display:none;}
+
+    .service-orders-search form input,
+    .service-orders-search form select{
+        width: 100%;
+    }
+    .service-orders-search .panel-body{
+        display: none;
+    }
+    .service-orders-search label{
+        margin-bottom: .1rem;
+        font-weight: 300;
+        line-height: 1;
+        font-size: 1.2rem;
+    }
+
+    .service-orders-search .panel-heading{
+        display: none;
+    }
+
+    .service-orders-search .panel-heading:focus + .panel-body{
+        display: block;
+    }
+
+
+    .service-orders-search input#hider{display:none;}
+
+    input#hider:checked+.panel-body{
+        display:block;
+    }
+    .service-orders-search .hidden-element-default{
+        display: inline-block;
+    }
+
+    .service-orders th:nth-of-type(1):before { content: "Заказ №"; }
+	.service-orders td:nth-of-type(3):before { content: "SN: "; }
+	.service-orders td:nth-of-type(4):before { content: "Статус: "; }
+	.service-orders td:nth-of-type(5):before { content: "Принят:"; }
+	.service-orders td:nth-of-type(2),
+    .service-orders td:nth-of-type(6)
+    { display: none;}
+
+    table nav.menu_nav{
+        display: inline-block;
+    }
+
+    .paginator-item-total{
+        display: none;
+    }
+
+    .serial-lists th:nth-of-type(1):before { content: "Поставщик: "; }
+    .serial-lists td:nth-of-type(3)
+    { display: none;}
+    .serial-lists th:nth-of-type(6):before { content: "Цена: "; }
+    .serial-lists th:nth-of-type(7):before { content: "Гарантия: "; }
+}
+
+table.service-orders tr th:first-child {
+    max-width: 100px;
+    word-wrap: break-word;
+}
+
+table.service-orders tr td:nth-child(2) {
+    word-wrap: break-word;
+    word-break: break-all;
+    min-width: 250px;
+}

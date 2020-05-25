@@ -1,0 +1,306 @@
+{% extends 'base/base_template.html' %}
+{% load bootstrap4 %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% load fw_tags %}
+{% block content %}
+    <style>
+        nav.menu_nav ul{
+            position: absolute;
+            min-width: 10rem;
+            padding: .5rem 0;
+            margin: .125rem 0 0;
+            font-size: 1rem;
+            color: #212529;
+            text-align: left;
+            list-style: none;
+            background-color: #fff;
+            background-clip: padding-box;
+            border: 1px solid rgba(0,0,0,.15);
+            border-radius: .25rem;
+            z-index: 1000;
+        }
+        nav.menu_nav ul li{ display: block; }
+        .redAlert{
+            background-color: lightcoral;
+        }
+        .yellowWarning{
+            background-color: #dad55e;
+        }
+        .greenOk{
+            background-color: #97dab4;
+        }
+    </style>
+    {{ form.media }}            {# Adds date-picker required JS and CSS #}
+    <div class="panel panel-primary service-orders-search">
+        <div class="panel-heading" tabindex="1">
+            <h4 class="panel-title">Поиск</h4>
+        </div>
+        <label for="hider" class="btn btn-dark hidden-element-default">Поиск</label><input type="checkbox" id="hider" class="hidden">
+        <div class="panel-body">
+            <form method="post">
+                {% csrf_token %}
+                <input type="text" name="number" size="10" value="{{ param.number }}" alt="НОМЕР" placeholder="НОМЕР">
+                <input type="text" name="name" value="{{ param.name }}" alt="НАЗВАНИЕ" placeholder="НАЗВАНИЕ">
+                <input type="text" name="mnufacturer" size="15" value="{{ param.mnufacturer }}"  alt="ПРОИЗВОДИТЕЛЬ" placeholder="ПРОИЗВОДИТЕЛЬ">
+                <input type="text" name="serial"  size="12" value="{{ param.serial }}"  alt="СЕРИЙНИК" placeholder="СЕРИЙНИК">
+                <input type="text" name="phone" size="12" value="{{ param.phone }}"  alt="ТЕЛЕФОН" placeholder="ТЕЛЕФОН">
+                <select name="search_status_id">
+                    <option value="">--СТАТУС--</option>
+                    {% for entry in all_statuses %}
+                        <option value="{{ entry.id }}" {% if entry.id == search_status_id %}selected{% else %}{% endif %}>
+                            {{ entry.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+                <input type="submit" value="ПОИСК">
+            </form>
+        </div>
+    </div>
+
+    <div class="panel panel-primary">
+      <div class="panel-heading">
+        <h3 class="panel-title">Заказы на сервис</h3>
+      </div>
+        <div class="panel-body">
+
+            <table class="table service-orders">
+              <thead class="thead-dark">
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Изделие/Товар</th>
+                  <th scope="col">Производитель/Потавщик</th>
+                  <th scope="col">Серийник</th>
+                  <th scope="col">Статус</th>
+                  <th scope="col">Дата поступления</th>
+                  <th scope="col">Изменение</th>
+                  <th scope="col">Действие</th>
+                </tr>
+              </thead>
+              <tbody>
+              {% for order in orders %}
+                <tr class="
+                      {% if  order.close_date %}
+                          greenOk
+                      {% else %}
+                           {% if  order.pass_dates > 14 %} redAlert
+                           {% elif order.pass_dates > 10  %} yellowWarning
+                           {% else %}  {% endif %}
+                      {% endif %}
+
+                ">
+                  <th scope="row">{{ order.pk }} {% if  order.adi_code %} / {{ order.adi_code }}{% endif %}
+                  {% if  order.is_service_order %}
+                      <img width="20px" src="{% static '/favicon.ico' %}">
+                  {% endif %}
+                  </th>
+                  <td>{{ order.item_name }}</td>
+                  <td>{{ order.manufacturer }} /
+                      {% if  order.itemProvider.url %}
+                        <a target="_blank" title="{{ order.itemProvider.comments }}" href="{{ order.itemProvider.url|default_if_none:"#"  }}">{{ order.itemProvider.name|default_if_none:"" }}</a>
+                      {% else %}
+                        <b title="{{ order.itemProvider.comments }}">{{ order.itemProvider.name|default_if_none:"" }}</b>
+                      {% endif %}
+                  </td>
+                  <td>{{ order.serial_number }}</td>
+                  <td>{{ order.status }}</td>
+                  <td>{{ order.date_of_receipt }} {{ order.date_of_receipt|days_until }}</td>
+                  <td>{{ order.date_of_modify }}</td>
+                  <td>
+                      <button class="btn-sm btn-primary" onclick="opendialog('{% url 'detail' order.pk  %}')">Подробнее</button>
+                      <nav class="menu_nav  clickFade">
+                        <a href="javascript:void(0)" class="btn-sm btn-success dropdown-toggle">Меню</a>
+                                    <ul>
+                                        {% if  not order.close_date %}
+                                        <li><a class="dropdown-item" href="#" data-toggle="modal" data-target="#exampleModal" data-whatever="{{ order.pk }}">Изменить статус</a></li>
+                                        {% endif %}
+                                        {% if  user.profile.can_edit and not order.close_date %}
+                                            <li><a class="dropdown-item" href="{% url 'update' order.pk  %}">Изменить заказ</a></li>
+                                        {% endif %}
+                                        <li><a class="dropdown-item" href="{% url 'clone' order.pk  %}">Клонировать заказ</a></li>
+                                        <li><a class="dropdown-item" href="#" data-toggle="modal" data-target="#commentModal" data-whatever="{{ order.pk }}">Комментарий</a></li>
+                                        <li><a class="dropdown-item" target="_blank" href="{% url 'view' order.pk  %}">Квитанция</a></li>
+                                        <li><a class="dropdown-item" target="_blank" href="{% url 'ret' order.pk  %}">Возврат</a></li>
+                                        <li><a class="dropdown-item" target="_blank" href="{% url 'rej' order.pk  %}">Отказ</a></li>
+                                    </ul>
+                      </nav>
+                  </td>
+                </tr>
+                    {% empty %}
+                        <tr><td>Нет данных</td></tr>
+                    {% endfor %}
+              </tbody>
+            </table>
+{% load fw_tags %}
+{% paging_navigation page param %}
+        </div>
+    </div>
+
+
+
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Изменить состояние заказа</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+        <form method="post">
+      <div class="modal-body">
+        <div id="editForm">
+
+            {% csrf_token %}
+                <input type="hidden" name="number" value="{{ param.number }}">
+                <input type="hidden" name="name" value="{{ param.name }}">
+                <input type="hidden" name="mnufacturer" value="{{ param.mnufacturer }}">
+                <input type="hidden" name="serial" value="{{ param.serial }}">
+                <input type="hidden" name="phone" value="{{ param.phone }}">
+                <input type="hidden" name="phone" value="{{ param.phone }}">
+                <input type="hidden" name="search_status_id" value="{{ param.search_status_id }}">
+                <input type="hidden" id="orderid" name="orderid">
+
+          <div class="form-group">
+              <label for="state" class="col-form-label">Состояние:</label>
+              <select class="form-control" id="state" name="newstate"></select>
+          </div>
+
+
+          <div class="form-group">
+            <label for="recipient-name" class="col-form-label">Местоположение:</label>
+            <select name="provider" id="itemselect">
+                <option value="0">НЕТ</option>
+            {% for org in item_provider %}
+               <option value="{{org.id}}"
+                   {% if org == current_org %}selected="selected"{% endif %}>
+                   {{org.name|capfirst}}
+               </option>
+            {% endfor %}
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="message-text" class="col-form-label">Коментарий:</label>
+            <textarea class="form-control" id="message-text" name="comments"></textarea>
+          </div>
+          <div class="form-group">
+              <label for="can-modify" class="col-form-label">Изменить состояние (добавить комментарий):</label>
+              <input type="checkbox" name="modify" id="can-modify" checked>
+          </div>
+        </div>
+        <div id="infoForm"><h3>"Заказ уже закрыт!"</h3></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+        <button type="submit" class="btn btn-primary" id="saveform">Сохранить</button>
+      </div>
+        </form>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="commentModal" tabindex="-1" role="dialog" aria-labelledby="commentModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Комментарий к заказу</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+        <form method="post">
+      <div class="modal-body">
+        <div id="editForm">
+            {% csrf_token %}
+                <input type="hidden" name="number" value="{{ param.number }}">
+                <input type="hidden" name="name" value="{{ param.name }}">
+                <input type="hidden" name="mnufacturer" value="{{ param.mnufacturer }}">
+                <input type="hidden" name="serial" value="{{ param.serial }}">
+                <input type="hidden" name="phone" value="{{ param.phone }}">
+                <input type="hidden" name="search_status_id" value="{{ param.search_status_id }}">
+                <input type="hidden" id="orderid" name="orderid">
+          <div class="form-group">
+            <label for="message-text" class="col-form-label">Коментарий:</label>
+            <textarea class="form-control" id="message-text" name="comments"></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+        <button type="submit" class="btn btn-primary" id="saveform">Сохранить</button>
+      </div>
+        </form>
+    </div>
+  </div>
+</div>
+
+<script>
+        function opendialog(url)    {
+            $('<div>').dialog({
+                modal: true,
+                open: function ()
+                {
+                    $(this).load(url);
+                },
+                height: 800,
+                width: window.innerWidth <= 700? '90%' : '600',
+                title: 'Детальная информация'
+            });
+        }
+
+        $(document).ready(function(){
+
+            $(".clickFade ul").hide();
+            $(".clickFade").hover(function(){
+                $(this).children("ul").stop(true,true).fadeToggle("fast"),
+                $(this).toggleClass("dropdown-active");
+            });
+
+
+            $('#exampleModal').on('show.bs.modal', function (event) {
+              var button = $(event.relatedTarget); // Button that triggered the modal
+              var id = button.data('whatever'); // Extract info from data-* attributes
+              // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+              // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+              var modal = $(this);
+                request={};
+               $.getJSON( "/orders/next"+id, request, function( data, status, xhr ) {
+                  if (data === undefined || data.length == 0 || jQuery.isEmptyObject(data)) {
+                      $('#editForm').hide();
+                      $('#saveform').hide();
+                      $('#infoForm').show();
+                  } else {
+                      $('#infoForm').hide();
+                      $('#editForm').show();
+                      $('#saveform').show();
+                  }
+
+                  var select = $(".modal-body select#state");
+                  if(select && data) {
+                      select.find('option').remove().end();
+                      console.log( data );
+                      for (elem in data) {
+                          select.append($('<option>', {value: elem, text: data[elem]}))
+                      }
+                  }
+               });
+
+
+              modal.find('.modal-body input#orderid').val(id);
+              modal.find('.modal-body input#recipient-name').val(id);
+            });
+
+            $('#commentModal').on('show.bs.modal', function (event) {
+              var button = $(event.relatedTarget); // Button that triggered the modal
+              var id = button.data('whatever'); // Extract info from data-* attributes
+              // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+              // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+              var modal = $(this);
+
+              modal.find('.modal-body input#orderid').val(id);
+              modal.find('.modal-body input#recipient-name').val(id);
+            });
+        });
+</script>
+{% endblock %}

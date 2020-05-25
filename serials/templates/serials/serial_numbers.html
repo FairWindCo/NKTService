@@ -1,0 +1,92 @@
+{% extends 'base/base_template.html' %}
+{% load bootstrap4 %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block content %}
+    <style>
+        nav.menu_nav ul{
+            position: absolute;
+            min-width: 10rem;
+            padding: .5rem 0;
+            margin: .125rem 0 0;
+            font-size: 1rem;
+            color: #212529;
+            text-align: left;
+            list-style: none;
+            background-color: #fff;
+            background-clip: padding-box;
+            border: 1px solid rgba(0,0,0,.15);
+            border-radius: .25rem;
+            z-index: 1000;
+        }
+        nav.menu_nav ul li{ display: block; }
+        .redAlert{
+            background-color: lightcoral;
+        }
+        .yellowWarning{
+            background-color: #dad55e;
+        }
+        .greenOk{
+            background-color: #97dab4;
+        }
+    </style>
+    {{ form.media }}            {# Adds date-picker required JS and CSS #}
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+        <h4 class="panel-title">Поиск</h4>
+      </div>
+        <div class="panel-body">
+            <form method="post">
+                {% csrf_token %}
+                <input type="text" name="name" value="{{ param.name }}" alt="НАЗВАНИЕ" placeholder="НАЗВАНИЕ">
+                <input type="text" name="mnufacturer" value="{{ param.mnufacturer }}"  alt="ПРОИЗВОДИТЕЛЬ" placeholder="ПРОИЗВОДИТЕЛЬ">
+                <input type="text" name="serial" value="{{ param.serial }}"  alt="СЕРИЙНИК" placeholder="СЕРИЙНИК">
+                <input type="submit" value="ПОИСК">
+            </form>
+        </div>
+    </div>
+
+    <div class="panel panel-primary">
+      <div class="panel-heading">
+        <h3 class="panel-title">База серийных номеров</h3>
+      </div>
+        <div class="panel-body">
+
+            <table class="table">
+              <thead class="thead-dark">
+                <tr>
+                  <th scope="col">Поставщик</th>
+                  <th scope="col">Изделие/Товар</th>
+                  <th scope="col">Производитель</th>
+                  <th scope="col">Серийник</th>
+                  <th scope="col">Дата покупки</th>
+                  <th scope="col">Цена</th>
+                  <th scope="col">Гарантия</th>
+                  <th scope="col">Документ</th>
+                </tr>
+              </thead>
+              <tbody>
+              {% for serial in serials %}
+                <tr>
+                  <td>{{ serial.itemProvider.name }}</td>
+                  <td>{{ serial.item_name }}</td>
+                  <td>{{ serial.manufacturer }}</td>
+                  <td>{{ serial.serial_number }}</td>
+                  <td>{{ serial.item_purchase_date }}</td>
+                  <td>{{ serial.price }}</td>
+                  <td>{{ serial.warranty }}</td>
+                  <td>{{ serial.purchase_document }}</td>
+                </tr>
+                    {% empty %}
+                        <tr><td>Нет данных</td></tr>
+                    {% endfor %}
+              </tbody>
+            </table>
+{% load fw_tags %}
+{% paging_navigation page param %}
+        </div>
+    </div>
+
+
+
+{% endblock %}

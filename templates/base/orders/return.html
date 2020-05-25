@@ -1,0 +1,43 @@
+{% extends 'base/orders/../../base/document_base.html' %}
+{% load fw_tags %}
+{% block content%}
+		<div id="check">
+						<div style="width:21cm;">
+                            <div align="right">
+                            <div style="width: 210px;" >
+                            <p style="text-align:right;width: 200px;border-bottom: 1px black solid;">{{ order.contact_person }}</p>
+                            <p style="text-align:right;width: 200px;border-bottom: 1px black solid;">{{ order.contact_phone }}</p>
+                            <p style="text-align:right;width: 200px;border-bottom: 1px black solid;"></p>
+                            <p style="text-align:right;width: 200px;border-bottom: 1px black solid;"></p>
+							<p style="text-align:right;">(вказати своє прізвище, ім'я та<br> по батькові, адресу, телефон)</p><br>
+                            </div>
+                            </div>
+
+            <h1 style="text-align:center;">ЗАЯВА</h1>
+   <p align="justify">
+       {{ order.item_purchase_date }} у Вашому магазині я придбав
+       товар "{{ order.item_name }}"
+        {% if order.manufacturer %}
+        виробництва "{{ order.manufacturer }}"
+        {% endif %}
+        {% if order.serial_number %}
+        з серійним номером "{{ order.serial_number }}"
+        {% endif %}
+       {% if order.price %}
+         {% text_currency order.price before='вартістю' %},
+        {% endif %}
+       що підтверджується документом
+       {{ order.purchase_document }} від {{ order.item_purchase_date }} року.<BR>
+       У зв’язку з тим, що придбаний товар мені не підійшов __________________________________ ___________________________________________________________________________________________________ __________________________________  керуючись ст. 9 Закону України «Про захист прав споживачів», звертаюсь до Вас з проханням розірвати договір та повернути мені гроші у розмірі вартості товару згідно товарного чека.</p>
+<br>
+<br>
+<br>
+<br>
+<p><span style="margin-right:550px;">Дата: {% now "d.m.Y" %} </span>                                      підпис </p>  <br><br>
+
+<p><span style="margin-right:50px;">Стан товару перевірив __________________________________</span><span style="margin-right:70px;">Дата: {% now "d.m.Y" %} </span> підпис  </p>
+                        </div>
+			
+		</div>
+
+{% endblock %}

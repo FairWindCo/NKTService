@@ -1,0 +1,150 @@
+{% load bootstrap4 %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!--- BOOTSTRAP CSS --->
+{#{% load bootstrap4 %}       {# import bootstrap4/bootstrap3 #}
+{#{% bootstrap_css %}         {# Embed Bootstrap CSS #}
+{#{% bootstrap_javascript jquery='full' %}  {# Embed Bootstrap JS+jQuery #}
+
+<!--- BOOTSTRAP CSS --->
+    <link rel="stylesheet" href="{% static 'base/css/bootstrap.min.css' %}">
+    <!---<link rel="stylesheet" href="{% static 'base/css/bootstrap-grid.min.css' %}">--->
+    <!---<link rel="stylesheet" href="{% static 'base/css/bootstrap-reboot.min.css' %}">--->
+    <script src="{% static 'base/js/jquery-3.3.1.min.js' %}"></script>
+    <script src="{% static 'base/js/jquery-ui.min.js' %}"></script>
+    <!--- BOOTSTRAP JS --->
+    <script src="{% static 'base/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'base/js/bootstrap.bundle.min.js' %}"></script>
+    <style>
+        .order-detail .panel-body table{
+            font-size: 0.7em;
+        }
+        .order-detail h3{
+            font-size: 1em;
+        }
+        .order-detail h5{
+            font-size: 0.85em;
+        }
+    </style>
+ <style>
+    #check {
+        width: 256mm;
+        height: 21cm;
+        padding: 1cm;
+        margin: auto;
+    }
+    #check {
+        width: 100%;
+        height: 100%;
+        padding: 1cm;
+        margin: auto;
+    }
+    #check h1{
+        font-size: 1.8rem;
+        text-align: center;
+        margin-top: 10px;
+        margin-bottom: 20px;
+    }
+    .header-contacts-tel{
+        font-size: 14px;
+    }
+     .header_table{
+        margin-bottom: 40px;
+     }
+
+     .header_table_1{
+         font-size: 12px;
+     }
+
+    #check .item_table_1{
+        width: 100%;
+        table-layout:auto;
+    }
+
+    .item_table th{
+        font-size: 11px;
+    }
+
+    .item_table_1{
+        font-size: 10px;
+        font-weight: bold;
+        table-layout:fixed;
+        text-overflow: ellipsis;
+        word-wrap: break-word;
+    }
+.item_table_1 tr td:first-child{
+    width: 50px !important;
+}
+    .mts {
+        display: inline-block;
+        width: 20px;
+        height: 16px;
+        background: url({% static 'base/images/mb_ico.png' %}) no-repeat 0 0;
+        position: relative;
+        background-position: 0 -38px;
+    }
+
+    .foot-comment{
+        margin: 60px 50px;
+    }
+
+    </style>
+<link rel="stylesheet" href="{% static 'base/css/bootstrap.min.css' %}">
+</head>
+<body>
+
+<div class="header_table">
+        <h1>Гарантийный талон №{{ sheet.pk }} от {{ sheet.date_of_create|date:"d M. Y" }}</h1>
+        <table class="table header_table_1">
+          <tbody>
+            <tr>
+              <th>Дата</th>
+              <td>{{ sheet.date_document|date:"d.m.Y" }}</td>
+              <th>Дополнительный номер документа</th>
+              <td>{{ sheet.doc_num|default_if_none:"" }}</td>
+            </tr>
+
+            <tr>
+              <th>Клиент</th>
+              <td>{{ sheet.buyer_person|default_if_none:"" }}</td>
+              <th>Тел/факс</th>
+              <td>{{ sheet.buyer_phone|default_if_none:"" }}</td>
+            </tr>
+          </tbody>
+    </table>
+</div>
+<div class="item_table">
+
+    <table class="table item_table_1">
+          <thead class="thead-dark">
+            <tr>
+              <th scope="col">№ п/п</th>
+              <th scope="col">Производитель</th>
+              <th scope="col">Наименование товара</th>
+              <th scope="col">Серийный номер</th>
+              <th scope="col">Кол-во</th>
+            </tr>
+          </thead>
+          <tbody>
+{% for item in sheet_items %}
+            <tr>
+              <td>{{ forloop.counter }}</td>
+              <td>{{ item.manufacturer|default_if_none:"&nbsp;"  }}</td>
+              <td>{{ item.item_name }}</td>
+              <td>{{ item.serial_number|default_if_none:"&nbsp;"  }}</td>
+              <td>{{ item.count|default_if_none:"&nbsp;"  }}</td>
+            </tr>
+{% empty %}
+        <tr><td colspan="8">Нет данных</td></tr>
+{% endfor %}
+          </tbody>
+    </table>
+    {{ sheet.comment }}
+</div>
+</body>
+</html>

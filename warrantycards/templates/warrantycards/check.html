@@ -1,0 +1,160 @@
+{% extends 'base/document_base.html' %}
+{% load bootstrap4 %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% load fw_tags %}
+{% block title%}
+    Товарный чек №{{ sheet.pk }} от {{ sheet.date_of_create }}
+{% endblock %}
+
+{% block content%}
+    <style>
+    #check {
+        width: 256mm;
+        height: 21cm;
+        padding: 1cm;
+        margin: auto;
+    }
+    #check {
+        width: 100%;
+        height: 100%;
+        padding: 1cm;
+        margin: auto;
+    }
+    #check h1{
+        font-size: 1.6rem;
+        text-align: center;
+        margin-top: 5px;
+        margin-bottom: 10px;
+    }
+    #check h6{
+        font-size: 0.6rem;
+        margin-top: 5px;
+        margin-bottom: 10px;
+    }
+
+    #check .header-contacts-tel strong,
+    #check .header-contacts-tel em{
+        font-size: 10px;
+        line-height: 1;
+    }
+
+    #check .header-contacts-tel{
+        font-size: 10px;
+        line-height: 1;
+    }
+
+     .header_table{
+        margin-bottom: 20px;
+     }
+
+     .header_table_1{
+         font-size: 10px;
+
+     }
+
+     .header_table .header_table_1 th,
+     .header_table .header_table_1 td{
+         padding: 2px;
+     }
+
+    #check .item_table_1{
+        width: 100%;
+        table-layout:auto;
+    }
+
+    .item_table .table th{
+        font-size: 10px;
+        padding: 3px;
+    }
+
+    .item_table .table td{
+        font-size: 10px;
+        padding: 1px;
+    }
+
+    .item_table_1{
+        font-size: 10px;
+        font-weight: bold;
+        table-layout:fixed;
+        text-overflow: ellipsis;
+        word-wrap: break-word;
+    }
+.item_table_1 tr td:first-child{
+    width: 50px !important;
+}
+    .mts {
+        display: inline-block;
+        width: 20px;
+        height: 16px;
+        background: url('{% static 'base/images/mb_ico.png' %}') no-repeat 0 0;
+        position: relative;
+        background-position: 0 -38px;
+    }
+
+    .foot-comment{
+        margin: 20px 30px;
+    }
+
+    #check p{
+        font-size: 12px;
+    }
+
+    </style>
+<link rel="stylesheet" href="{% static 'base/css/bootstrap.min.css' %}">
+
+<style type="text/css" media="print">
+  @page { size: landscape; }
+</style>
+
+
+{% include "base/main_recvisit_ukr.html" %}
+
+<div class="header_table">
+        <h1>Товарный чек №{% if sheet.doc_num %} {{ sheet.doc_num }} {% else %}{{ sheet.pk }} {% endif %} від {{ sheet.date_document|date:"d M. Y" }}</h1>
+        <table class="table header_table_1">
+          <tbody>
+            <tr>
+              <th>Покупець</th>
+              <td>{{ sheet.buyer_person|default_if_none:"" }}</td>
+              <th>Контактний тел/факс</th>
+              <td>{{ sheet.buyer_phone|default_if_none:"" }}</td>
+            </tr>
+          </tbody>
+    </table>
+</div>
+<div class="item_table">
+
+    <table class="table item_table_1">
+          <thead class="thead-dark">
+            <tr>
+              <th scope="col">№ п/п</th>
+              <th scope="col">Найменування</th>
+              <th scope="col">Кіл-ть</th>
+              <th scope="col">Ціна</th>
+              <th scope="col">Сумма</th>
+            </tr>
+          </thead>
+          <tbody>
+{% for item in sheet_items %}
+            <tr>
+              <td>{{ forloop.counter }}</td>
+              <td>{{ item.item_name }}</td>
+              <td>{{ item.count|default_if_none:"&nbsp;"  }}</td>
+              <td>{{ item.price|default_if_none:"&nbsp;"  }}</td>
+              <td>{% multiply item.count item.price  %}</td>
+            </tr>
+{% empty %}
+        <tr><td colspan="5">Немає данних</td></tr>
+{% endfor %}
+          {% if sheet_items %}
+              <tr><td colspan="4">ИТОГО</td><td>{{ total_sum }}</td></tr>
+          {% endif %}
+          </tbody>
+    </table>
+    {{ sheet.comment }}
+    <p class="foot-comment">---------------------------------------------------------------------------------------------------------------------------------------</p>
+    <p>Сопроводительный лист №{{ sheet.pk }} от {{ sheet.date_of_create }}</p>
+    <p>«Продукцию получил»:  _______________________ _______________ _______________</p>
+</div>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% load static %}
+{% load i18n %}
+{% load bootstrap4 %}
+
+{% block recvisit_header_data%}
+{% endblock %}
+
+
+{% block recvisit_content%}
+<div class="container card-header">
+  <div class="row">
+    <div class="col-sm-4">
+      <img src="{% static 'base/images/nkt_15.png' %}" width="225" height="55" alt="" class="ty-logo-container__image">
+    </div>
+    <div class="col-sm-4">
+        ТОВ "НКТ"<BR>
+        м. Київ, вул. Старокиївська 10
+    </div>
+    <div class="col-sm-2 header-contacts-tel">
+                (044) <strong>303-92-30</strong><br>
+                (093) <strong>170-02-62</strong><br>
+                (097) <strong>949-25-27</strong><br>
+                (050) <strong>137-59-09</strong>
+    </div>
+    <div class="col-sm-2 header-contacts-tel">
+           <p style="padding:0;">
+                Час работи:
+                <br>
+                пн-пт 10-19,
+                <br>
+                сб, нд - вихідний
+                <br>
+            </p>
+    </div>
+  </div>
+</div>
+{% endblock %}

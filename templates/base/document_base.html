@@ -1,0 +1,107 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Сервисный центр НКТ{% endblock %}</title>
+    <link rel="shortcut icon" href="{% static '/favicon.ico' %}" type='image/x-icon'>
+		<style>
+			table {
+				border-collapse: collapse;
+			}
+            tr td:first-child{
+                max-width: 20%;
+                width: 20%;
+            }
+			td {
+				border: 1px solid gray;
+
+			}
+			@media print {
+				.noprint { display: none; }
+                    body, h1, h5{
+                    padding: 0;
+                    margin: 0;
+                }
+                #check{
+                    padding: 0.2cm;
+                    margin: 0;
+                }
+                h3{
+                    margin: 10px;
+                }
+                h3:first-child{
+                    margin: 10px;
+                }
+                h3 ~p{
+                    margin: 0;
+                }
+                #check h1{
+                    margin:0;
+                }
+                ol{
+                    font-family: "Times New Roman";
+                    font-size: 12px;
+                    margin: 2px;
+                    padding-inline-start: 20px;
+                }
+			}
+			#check{
+				width: 21cm;
+				height: 256mm;
+
+				padding: 1cm;
+			}
+			table{
+				width:900px;
+
+			}
+
+            .noprint form{
+                display: inline;
+            }
+
+		</style>
+
+    {% block recvisit_header_data%}
+    {% endblock %}
+
+    {% block head_block %}
+    {% endblock %}
+
+</head>
+<body>
+		<div class="noprint">
+			<span>Вернутся назад: </span><button onclick="moveBack()">Back</button>
+			<span>Главное меню: </span><button><a href="http://servis.my.ua/index.php">Главная</a></button>
+			<form>
+				<input type="button" class="for" value="распечатать страницу" onclick="printit()">
+                <input type="button" class="for" value="распечатать страницу и закрыть" onclick="printit2()">
+			</form>
+		</div>
+		<div id="check">
+            {% block recvisit_content%}
+            {% endblock %}
+            {% block content%}
+            {% endblock %}
+		</div>
+        <div class="noprint">
+			<script language="Javascript">
+				function printit(){
+					window.print() ;
+				}
+				function printit2(){
+					window.print() ;
+					window.close();
+				}
+				function moveBack(){
+				    if(window.history.length>1){
+				        window.history.back()
+                    } else {
+				        window.close();
+                    }
+				}
+			</script>
+		</div>
+</body>
+</html>

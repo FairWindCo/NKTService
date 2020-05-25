@@ -1,0 +1,154 @@
+{% extends 'base/base_template.html' %}
+{% load static %}
+{% load bootstrap4 %}
+{% load crispy_forms_tags %}
+{% load crispy_forms_utils %}
+{% load crispy_forms_field %}
+
+{% block head_block %}
+    <style>
+        #myForm div.subform tr {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            border: 1px solid;
+            align-items:center;
+        }
+        #myForm div.subform td {
+            display: block;
+            flex: 1 1 250px;
+            margin-left: 10px;
+            margin-right: 10px;
+        }
+        #myForm div.subform td:first-child,
+        #myForm div.subform td:nth-child(2),
+        #myForm div.subform td:nth-child(3){
+            flex-basis: 450px;
+        }
+
+        #myForm div.subform td:nth-child(5){
+            flex-basis: 200px;
+        }
+
+        #myForm div.subform td:nth-child(4),
+        #myForm div.subform td:nth-child(6),
+        #myForm div.subform td:nth-child(7){
+            flex-basis: 100px;
+        }
+
+        #myForm div.subform td:last-child{
+            flex-basis: 80px;
+        }
+        #myForm div.subform tr:last-child {
+            border: none;
+            margin-top: 5px;
+        }
+        #myForm div.subform tr:last-child td{
+            text-align: center;
+        }
+
+        #myForm div.subform tr tr{
+            display: table-row;
+        }
+        #myForm div.subform td td{
+            display: table-cell;
+            flex: none;
+        }
+    </style>
+    {{ form.media }}
+    {{ form_items.media }}
+{% endblock %}
+
+
+{% block content %}
+    <div class="panel">
+        <div class="panel-heading">
+            <h3 class="panel-title">Гарантийный талон № {{ form.instance.pk|default_if_none:'' }}</h3>
+        </div>
+        <div class="panel-body">
+    <form method="post" id='myForm' class="uniForm" novalidate>
+        {% if form.instance.pk %}
+            <input type="hidden" name="ac_id" value="{{ form.instance.pk }}">
+        {% endif %}
+    {% csrf_token %}
+     {% crispy form %}
+            <div class="subform">
+                    <h5 class="panel-title">Элементы</h5>
+                    <table border="0" cellpadding="0" cellspacing="0">
+
+                        <tbody>
+                            {% for item in form_items.forms %}
+                            <tr>
+                                {% for field in item %}
+                                    {% include 'bootstrap4/field.html' with tag="td" form_show_labels=True %}
+                                {% endfor %}
+                                <td></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+            </div>
+    {% if form.instance.pk %}
+        <a class="btn btn-primary button white" target="_blank" href="{% url 'view_warranty_card' form.instance.pk  %}">Гарантия</a>
+        <a class="btn btn-primary button white" target="_blank" href="{% url 'view_check_card' form.instance.pk  %}">Чек</a>
+    {% endif %}
+    <input type="submit" value="Сохранить" class="btn btn-primary button white"/>
+        {{ form_items.management_form }}
+    </form>
+    </div></div>
+<script src="{% static 'base/js/jquery.formset.js' %}"></script>
+<script src="{% static 'base/js/bootstrap-datetimepicker.ru.js' %}"></script>
+<script type="text/javascript">
+  $(document).ready(function () {
+    $('#myForm div.subform tr').formset({
+      prefix: '{{ form_items.prefix }}',
+      formCssClass: 'dynamic-question_formset',
+      addCssClass: 'add-row btn btn-primary button white',          // CSS class applied to the add link
+      deleteCssClass: 'delete-row btn btn-primary button white',    // CSS class applied to the delete link
+      addText: 'Добавить строку',
+      deleteText: 'Удалить строку',
+      added:function (row) {
+          $(row).find('select').val('')
+          $(row).find('select').on('change', change);
+      }
+    });
+
+    function change(event){
+      const prefix='{{ form_items.prefix }}';
+      const id = $(this).val();
+      const element_name=$(this).attr('name');
+      let element_base=element_name.substring(prefix.length+1);
+      let pos_num=element_base.indexOf('-');
+      let num=element_base.substring(0,pos_num);
+      element_base='#id_' +prefix+'-'+num;
+      if($(element_base + '-serial_number').length==0){
+          element_base='#' +prefix+'-'+num+'-id_warrantycarditem_set-0';
+      }
+      //warrantycarditem_set-0-item_name
+      //id_warrantycarditem_set-0-serial_number
+      $.getJSON("/orders/json" + id, {}, function (data, status, xhr) {
+          $(element_base + '-serial_number').val(data['order_serial']);
+          $(element_base + '-item_name').val(data['order_name']);
+          $(element_base + '-count').val(data['order_count']);
+          $(element_base + '-warranty').val(data['order_warranty']);
+          $(element_base + '-price').val(data['order_price']);
+
+          $(element_base + '-itemProvider').val(data['order_itemprov_id']);
+          if($('#id_buyer_person').val() == 'Розничный') {
+              $('#id_buyer_person').val(data['order_contact_person']);
+              $('#id_buyer_phone').val(data['order_contact_phone']);
+          }
+      });
+    }
+
+    $('#myForm div.subform select').on('change', change);
+
+
+    language_code = $('html').attr('lang');
+    $.datepicker.setDefaults($.datepicker.regional["ru"]);
+
+
+
+  });
+</script>
+{% endblock %}

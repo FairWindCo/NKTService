@@ -1,0 +1,61 @@
+{% extends 'base/base_template.html' %}
+{% load static %}
+{% load bootstrap4 %}
+{% load crispy_forms_tags %}
+{% block content %}
+    {{ form.media }}            {# Adds date-picker required JS and CSS #}
+    <div class="panel panel-primary">
+      <div class="panel-heading">
+        <h3 class="panel-title">Новый заказ на сервис</h3>
+      </div>
+        <div class="panel-body">
+            <form method="post" id="theForm" novalidate>
+                {% csrf_token %}
+                {# {{ form.as_p}} {##}
+                {# {% bootstrap_form form   %}{#  #}
+                 {% crispy form %} {##}
+            </form>
+        </div>
+        {% block print_content %}
+        {% endblock %}
+    </div>
+    <script src="{% static 'base/js/bootstrap-datetimepicker.ru.js' %}"></script>
+    <script>
+        $(document).ready(function () {
+            createAutoCompleteMultiple('/autocomplete/auto_errors/','#id_damage')
+            createAutoCompleteMultiple('/autocomplete/auto_complect/','#id_equipment')
+            createAutoComplete('/orders/auto_manufacturers/','#id_manufacturer',5);
+            createAutoComplete('/autocomplete/auto_docs/','#id_purchase_document',3);
+
+            createAutoComplete('/orders/auto_items/','#id_item_name',5,function (event, ui) {
+                manuf = ui.item.manufacturer;
+                if(manuf){
+                    $('#id_manufacturer').val(manuf);
+                }
+                $( "#id_manufacturer" ).autocomplete( "disable" );
+            });
+            createAutoComplete('/orders/auto_serials/','#id_serial_number',5,function (event,ui) {
+                price=ui.item.price;
+                if(price){
+                    $('#id_price').val(price);
+                }
+                itemProvider_id = ui.item.itemProvider_id;
+                if(itemProvider_id){
+                    //$('#id_itemProvider option:eq('+ itemProvider_id +')').prop('selected', true)
+                    $('#id_itemProvider').val(itemProvider_id);
+                }
+                item_name = ui.item.item_name;
+                if(item_name){
+                    $('#id_item_name').val(item_name);
+                }
+                manuf=ui.item.manufacturer;
+                if(manuf){
+                    $('#id_manufacturer').val(manuf);
+                }
+                $( "#id_manufacturer" ).autocomplete( "disable" );
+                $( "#id_item_name" ).autocomplete( "disable" );
+            });
+
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends 'base/orders/CreateServiceOrder.html' %}
+{% block print_content %}
+    <div class="panel-footer">
+       <button id="printView">КВИТАНЦИЯ</button>
+       <button id="printReturn">ВОЗВРАТ</button>
+       <button id="printReject">ОТКАЗ</button>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            function formSendFunction(url){
+                return function(){
+                    $.post(url, $('#theForm').serialize(), function(data){
+                        //alert(data);
+                        var win=window.open('about:blank');
+                        with(win.document)
+                        {
+                            open();
+                            write(data);
+                            close();
+                        }
+                    });
+                }
+            }
+            $('#printView').on('click',formSendFunction('{% url 'view' object.pk %}'));
+            $('#printReturn').on('click',formSendFunction('{% url 'ret' object.pk %}'));
+            $('#printReject').on('click',formSendFunction('{% url 'rej' object.pk %}'));
+        });
+    </script>
+{% endblock %}
